@@ -5,23 +5,31 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        nextcloud-test-image:
+          - ghcr.io/stekoe/nextcloud-docker-testing:stable30
+          - ghcr.io/stekoe/nextcloud-docker-testing:stable31
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "14.x"
+          node-version: "20.x"
       - run: npm ci
       - run: npm run test
+        env:
+          NEXTCLOUD_TEST_IMAGE: ${{ matrix.nextcloud-test-image }}
 
   build:
     name: Build
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "14.x"
+          node-version: "20.x"
       - run: npm ci
       - run: npm run build
 
@@ -30,7 +38,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Install required dependencies
         run: sudo apt-get update && sudo apt-get install --no-install-recommends openssl sqlite libpq-dev libmysql++-dev libxml2-utils
       - name: Determine version
@@ -61,7 +69,7 @@ jobs:
         run: |
           echo "${{ secrets.PRIVATE_KEY }}" > privatekey.pem
           openssl dgst -sha512 -sign privatekey.pem customproperties_${{ env.VERSION }}.tar.gz | openssl base64 > signature.txt
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
           path: |
@@ -73,7 +81,7 @@ jobs:
     needs: sign
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
       - name: Display structure of downloaded files
         run: ls -R
       - name: Determine version

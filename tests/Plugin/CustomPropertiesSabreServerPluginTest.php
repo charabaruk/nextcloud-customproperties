@@ -5,10 +5,10 @@ namespace OCA\CustomProperties\Plugin;
 use OCA\CustomProperties\AppInfo\Application;
 use OCA\CustomProperties\Db\CustomProperty;
 use OCA\CustomProperties\Db\Property;
+use OCA\CustomProperties\Service\CurrentUserProvider;
 use OCA\CustomProperties\Service\PropertyService;
 use OCA\DAV\Connector\Sabre\Node;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\PropFind;
 use Sabre\DAV\PropPatch;
@@ -173,7 +173,11 @@ class CustomPropertiesSabreServerPluginTest extends TestCase
         $this->propertyService->method('getCustomProperty')
             ->willReturn($property);
 
-        $this->plugin = new CustomPropertiesSabreServerPlugin($this->propertyService, 4711, $this->createMock(LoggerInterface::class));
+        $currentUserProvider = $this->createMock(CurrentUserProvider::class);
+        $currentUserProvider->method('getCurrentUserId')
+            ->willReturn('4711');
+
+        $this->plugin = new CustomPropertiesSabreServerPlugin($this->propertyService, $currentUserProvider);
 
         $tree = $this->createMock(Tree::class);
         $node = $this->getMockBuilder(Node::class)
