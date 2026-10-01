@@ -119,7 +119,7 @@ class CustomPropertiesSabreServerPlugin extends ServerPlugin
             return;
         }
 
-        $propPatch->handle($this->getCustomPropertynames(), function ($a) use ($path) {
+        $propPatch->handle($this->getCustomPropertynames(), function ($a) use ($path, $userId) {
             try {
                 foreach ($a as $key => $value) {
                     if (!empty(trim($value))) {
