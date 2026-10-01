@@ -7,8 +7,11 @@
 </template>
 
 <script>
-import Tab from '@nextcloud/vue/dist/Components/AppSidebarTab'
+import NextcloudVue from '@nextcloud/vue'
+import LegacyAppSidebarTab from '@nextcloud/vue/dist/Components/AppSidebarTab'
 import TabContent from './TabContent'
+
+const Tab = NextcloudVue?.NcAppSidebarTab || NextcloudVue?.AppSidebarTab || LegacyAppSidebarTab
 
 export default {
 	name: 'SidebarTab',

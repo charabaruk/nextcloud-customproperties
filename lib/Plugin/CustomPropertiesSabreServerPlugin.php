@@ -5,6 +5,7 @@ namespace OCA\CustomProperties\Plugin;
 use OCA\CustomProperties\AppInfo\Application;
 use OCA\CustomProperties\Db\CustomProperty;
 use OCA\CustomProperties\Db\Property;
+use OCA\CustomProperties\Service\CurrentUserProvider;
 use OCA\CustomProperties\Service\PropertyService;
 use OCA\DAV\Connector\Sabre\Node;
 use Sabre\DAV\INode;
@@ -25,7 +26,14 @@ class CustomPropertiesSabreServerPlugin extends ServerPlugin
      * @var PropertyService
      */
     private $propertyService;
+    /**
+     * @var CurrentUserProvider
+     */
+    private $currentUserProvider;
 
+    /**
+     * @var string|null
+     */
     private $userId;
     /**
      * @var CustomProperty[]
@@ -35,11 +43,13 @@ class CustomPropertiesSabreServerPlugin extends ServerPlugin
     /**
      * CustomPropertiesSabreServerPlugin constructor.
      * @param PropertyService $propertyService
-     * @param $userId
+     * @param CurrentUserProvider $currentUserProvider
+     * @param string|null $userId
      */
-    public function __construct(PropertyService $propertyService, $userId)
+    public function __construct(PropertyService $propertyService, CurrentUserProvider $currentUserProvider, ?string $userId = null)
     {
         $this->propertyService = $propertyService;
+        $this->currentUserProvider = $currentUserProvider;
         $this->userId = $userId;
 
         $this->customPropertyDefinitions = $this->propertyService->findCustomPropertyDefinitions();
@@ -75,7 +85,11 @@ class CustomPropertiesSabreServerPlugin extends ServerPlugin
     public function propFind(PropFind $propFind, INode $node)
     {
         if ($node instanceof Node) {
-            $path = "files" . DIRECTORY_SEPARATOR . \OC_User::getUser() . $node->getPath();
+            $userId = $this->resolveUserId();
+            if ($userId === null) {
+                return;
+            }
+            $path = "files" . DIRECTORY_SEPARATOR . $userId . $node->getPath();
 
             if ($propFind->isAllProps()) {
                 $this->handlePropFindAllProps($propFind, $path);
@@ -94,19 +108,24 @@ class CustomPropertiesSabreServerPlugin extends ServerPlugin
      */
     public function propPatch($path, PropPatch $propPatch)
     {
+        $userId = $this->resolveUserId();
+        if ($userId === null) {
+            return;
+        }
+
         $node = $this->server->tree->getNodeForPath($path);
 
         if (!($node instanceof INode)) {
             return;
         }
 
-        $propPatch->handle($this->getCustomPropertynames(), function ($a) use ($path) {
+        $propPatch->handle($this->getCustomPropertynames(), function ($a) use ($path, $userId) {
             try {
                 foreach ($a as $key => $value) {
                     if (!empty(trim($value))) {
-                        $this->propertyService->upsertProperty($path, $key, $value, $this->userId);
+                        $this->propertyService->upsertProperty($path, $key, $value, $userId);
                     } else {
-                        $this->propertyService->deleteProperty($path, $key, $this->userId);
+                        $this->propertyService->deleteProperty($path, $key, $userId);
                     }
                 }
                 return true;
@@ -141,5 +160,19 @@ class CustomPropertiesSabreServerPlugin extends ServerPlugin
                 return $this->propertyService->getCustomProperty($path, $propertyname, $this->userId);
             });
         }
+    }
+
+    private function resolveUserId(): ?string
+    {
+        if ($this->userId !== null && $this->userId !== '') {
+            return $this->userId;
+        }
+
+        $this->userId = $this->currentUserProvider->getCurrentUserId();
+        if ($this->userId === null || $this->userId === '') {
+            return null;
+        }
+
+        return $this->userId;
     }
 }

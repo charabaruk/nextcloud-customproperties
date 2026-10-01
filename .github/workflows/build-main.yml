@@ -8,28 +8,35 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        nextcloud-test-image:
+          - ghcr.io/stekoe/nextcloud-docker-testing:stable30
+          - ghcr.io/stekoe/nextcloud-docker-testing:stable31
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "14.x"
-      - uses: docker/login-action@v1
+          node-version: "20.x"
+      - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - run: npm ci
       - run: npm run test
+        env:
+          NEXTCLOUD_TEST_IMAGE: ${{ matrix.nextcloud-test-image }}
 
   build:
     name: Build
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "14.x"
+          node-version: "20.x"
       - run: npm ci
       - run: npm run build
-
