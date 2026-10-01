@@ -7,7 +7,6 @@ use OCA\CustomProperties\Service\CurrentUserProvider;
 use OCA\CustomProperties\Service\PropertyService;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
-use OCP\SabrePluginEvent;
 
 class SabreAddPluginListener implements IEventListener
 {
@@ -34,7 +33,7 @@ class SabreAddPluginListener implements IEventListener
 
     public function handle(Event $event): void
     {
-        if ($event instanceof SabrePluginEvent) {
+        if (method_exists($event, 'getServer')) {
             $server = $event->getServer();
             $server->addPlugin(new CustomPropertiesSabreServerPlugin(
                 $this->propertyService,
