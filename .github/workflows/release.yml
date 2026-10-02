@@ -20,6 +20,10 @@ jobs:
           - ghcr.io/charabaruk/nextcloud-docker-testing:stable29
           - ghcr.io/charabaruk/nextcloud-docker-testing:stable30
           - ghcr.io/charabaruk/nextcloud-docker-testing:stable31
+          - ghcr.io/charabaruk/nextcloud-docker-testing:stable32
+          - ghcr.io/charabaruk/nextcloud-docker-testing:stable33
+          - ghcr.io/charabaruk/nextcloud-docker-testing:stable34
+          - ghcr.io/charabaruk/nextcloud-docker-testing:stable35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

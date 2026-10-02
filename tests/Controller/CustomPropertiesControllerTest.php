@@ -97,7 +97,7 @@ class CustomPropertiesControllerTest extends TestCase
         $this->assertEquals("text", $actual->propertytype);
     }
 
-    public function invalidCustomPropertyProvider()
+    public static function invalidCustomPropertyProvider()
     {
         return array(
             array(null, "text"),
