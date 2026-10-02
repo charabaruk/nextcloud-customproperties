@@ -44,6 +44,7 @@ class CustomPropertiesControllerTest extends TestCase
 
         $customProperty = [
             "propertyname" => $propertyname,
+            "propertylabel" => "I Am A Label",
             "propertytype" => $propertytype,
         ];
 
@@ -63,7 +64,7 @@ class CustomPropertiesControllerTest extends TestCase
         $customProperty = [
             "propertyname" => "propertyname",
             "propertylabel" => "I Am A Label",
-            "propertytype" => "texxt",
+            "propertytype" => "text",
         ];
 
         $this->controller->create($customProperty);
@@ -87,7 +88,7 @@ class CustomPropertiesControllerTest extends TestCase
             "id" => 1,
             "propertyname" => "propertyname",
             "propertylabel" => "I Am A Label",
-            "propertytype" => "texxt",
+            "propertytype" => "text",
         ];
 
         $actual = $this->controller->update($changedProperty);
