@@ -1,6 +1,9 @@
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Test
@@ -86,6 +89,8 @@ jobs:
   release:
     needs: sign
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/download-artifact@v4.1.3
       - name: Display structure of downloaded files
