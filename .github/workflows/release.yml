@@ -9,8 +9,14 @@ jobs:
       fail-fast: false
       matrix:
         nextcloud-test-image:
-          - ghcr.io/stekoe/nextcloud-docker-testing:stable30
-          - ghcr.io/stekoe/nextcloud-docker-testing:stable31
+          - ghcr.io/charabaruk/nextcloud-docker-testing:stable24
+          - ghcr.io/charabaruk/nextcloud-docker-testing:stable25
+          - ghcr.io/charabaruk/nextcloud-docker-testing:stable26
+          - ghcr.io/charabaruk/nextcloud-docker-testing:stable27
+          - ghcr.io/charabaruk/nextcloud-docker-testing:stable28
+          - ghcr.io/charabaruk/nextcloud-docker-testing:stable29
+          - ghcr.io/charabaruk/nextcloud-docker-testing:stable30
+          - ghcr.io/charabaruk/nextcloud-docker-testing:stable31
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
