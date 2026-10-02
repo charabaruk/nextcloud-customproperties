@@ -50,9 +50,9 @@ class CustomPropertiesController extends Controller
     public function create(array $customProperty): Entity
     {
         $newCustomProperty = new CustomProperty();
-        $newCustomProperty->setPropertyname($customProperty['propertyname']);
-        $newCustomProperty->setPropertylabel($customProperty['propertylabel']);
-        $newCustomProperty->setPropertytype($customProperty['propertytype']);
+        $newCustomProperty->setPropertyname($customProperty['propertyname'] ?? null);
+        $newCustomProperty->setPropertylabel($customProperty['propertylabel'] ?? null);
+        $newCustomProperty->setPropertytype($customProperty['propertytype'] ?? null);
 
         if (!$newCustomProperty->isValid()) {
             throw new CustomPropertyInvalidError();
@@ -70,8 +70,8 @@ class CustomPropertiesController extends Controller
     {
         $entity = $this->customPropertiesMapper->findById($customProperty['id']);
 
-        $entity->setPropertyname($customProperty['propertyname']);
-        $entity->setPropertylabel($customProperty['propertylabel']);
+        $entity->setPropertyname($customProperty['propertyname'] ?? null);
+        $entity->setPropertylabel($customProperty['propertylabel'] ?? null);
 
         if (!$entity->isValid()) {
             throw new CustomPropertyInvalidError();
